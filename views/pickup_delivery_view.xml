@@ -1,0 +1,70 @@
+<openerp>
+	<data>
+
+<!-- Level 1 and 2 menus ================================================================ -->
+
+		<menuitem sequence="23" id="pickup_delivery_root_menu" name="Pickup And Delivery" />
+		<menuitem sequence="1" id="pickup_delivery_menu" name="Request" parent="pickup_delivery_root_menu" />
+
+<!-- Pickup and Delivery ================================================================ -->
+
+		<record model="ir.ui.view" id="pickup_delivery_request_pickup_form">
+			<field name="name">pickup.delivery.request.pickup.form</field>
+			<field name="model">pickup.delivery.request</field>
+			<field name="arch" type="xml">
+				<form string="Request Form" version="7.0">
+					<group>
+						<field name="partner_id"/>
+						<field name="name"/>
+						<field name="request_type"/>
+						<field name="address"/>
+						<field name="request_date"/>
+						<field name="state"/>
+						<field name="executed_date"/>
+					</group>
+				</form>
+			</field>
+		</record>	
+
+		<record model="ir.ui.view" id="pickup_delivery_request_pickup_tree">
+			<field name="name">pickup.delivery.request.pickup.tree</field>
+			<field name="model">pickup.delivery.request</field>
+			<field name="arch" type="xml">
+				<tree string="Pickup Delivery Request" version="7.0">
+					<field name="partner_id"/>
+					<field name="name"/>
+					<field name="request_type"/>
+					<field name="address"/>
+					<field name="request_date"/>
+					<field name="state"/>
+					<field name="executed_date"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="pickup_delivery_action_pickup_request" model="ir.actions.act_window">
+			<field name="name">Pickup</field>
+			<field name="res_model">pickup.delivery.request</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('request_type','in',['pickup'])]</field>
+			<field name="context">{"default_request_type" : "pickup"}</field>
+		</record>
+
+		<menuitem sequence="1" id="pickup_delivery_request_pickup_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_pickup_request" />
+
+		<record id="pickup_delivery_action_delivery_request" model="ir.actions.act_window">
+			<field name="name">Delivery</field>
+			<field name="res_model">pickup.delivery.request</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('request_type','in',['delivery'])]</field>
+			<field name="context">{"default_request_type" : "delivery"}</field>
+		</record>
+
+		<menuitem sequence="2" id="pickup_delivery_request_delivery_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_delivery_request" />
+
+
+
+	</data>
+</openerp>
