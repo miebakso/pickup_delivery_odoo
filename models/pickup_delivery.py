@@ -27,7 +27,7 @@ class pickup_delivery_request(models.Model):
 		('canceled', 'Canceled'),
 	], 'State', required=True, default='requested')
 	executed_date = fields.Datetime('Executed Date')
-	#linde_ids =
+	line_ids = fields.One2many('pickup.delivery.request.line','header_id', 'Request Lines')
 
 	@api.multi
 	@api.depends('partner_id', 'partner_id.street')
@@ -35,3 +35,21 @@ class pickup_delivery_request(models.Model):
 		res_partner_env = self.env['res.partner']
 		for record in self:
 			record.address = res_partner_env.browse(record.partner_id.id).street
+
+	
+
+
+class pickup_delivery_request_line(models.Model):
+	
+	_name = 'pickup.delivery.request.line'
+
+	_description = 'Pickup delivery request line'
+
+	header_id = fields.Many2one('pickup.delivery.request', string="Request", ondelete="cascade")
+	product_id = fields.Many2one('product.product', string="Product", required=True)
+	qty = fields.Float('Quantitiy', required=True)
+	notes = fields.Text('notes')
+
+	_sql_constraints = [
+		('qty','CHECK(qty > 0 )','Quantity must be greater than 0')
+	]

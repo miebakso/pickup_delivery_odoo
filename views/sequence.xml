@@ -1,0 +1,10 @@
+<openerp>
+	<data>
+		<record model="ir.sequence" id="pikcup_delivery_request_seqence">
+		    <field name="name">Number Sequence</field>
+		    <field name="code">pickup.delivery.request</field>
+		    <field name="prefix">XXXX</field>
+		    <field name="padding">4</field>
+		</record>
+	</data>
+</openerp>

@@ -6,7 +6,7 @@
 		<menuitem sequence="23" id="pickup_delivery_root_menu" name="Pickup And Delivery" />
 		<menuitem sequence="1" id="pickup_delivery_menu" name="Request" parent="pickup_delivery_root_menu" />
 
-<!-- Pickup and Delivery ================================================================ -->
+	<!-- Pickup and Delivery ================================================================ -->
 
 		<record model="ir.ui.view" id="pickup_delivery_request_pickup_form">
 			<field name="name">pickup.delivery.request.pickup.form</field>
@@ -22,6 +22,13 @@
 						<field name="state"/>
 						<field name="executed_date"/>
 					</group>
+					<field name="line_ids">
+						<tree version="7.0" editable="bottom">
+							<field name="product_id"/>
+							<field name="qty"/>
+							<field name="notes"/>
+						</tree>
+					</field>
 				</form>
 			</field>
 		</record>	
@@ -38,6 +45,7 @@
 					<field name="request_date"/>
 					<field name="state"/>
 					<field name="executed_date"/>
+					<field name="line_ids"/>
 				</tree>
 			</field>
 		</record>
@@ -65,6 +73,45 @@
 		<menuitem sequence="2" id="pickup_delivery_request_delivery_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_delivery_request" />
 
 
+<!-- Pickup and Delivery Lines ========================================================== -->
+
+		<record model="ir.ui.view" id="pickup_delivery_request_line_form">
+			<field name="name">pickup.delivery.request.line.form</field>
+			<field name="model">pickup.delivery.request.line</field>
+			<field name="arch" type="xml">
+				<form string="Request Form" version="7.0">
+					<group>
+						<field name="header_id"/>
+						<field name="product_id"/>
+						<field name="qty"/>
+						<field name="notes"/>
+					</group>
+				</form>
+			</field>
+		</record>	
+
+
+		<record model="ir.ui.view" id="pickup_delivery_request_line_tree">
+			<field name="name">pickup.delivery.request.line.tree</field>
+			<field name="model">pickup.delivery.request.line</field>
+			<field name="arch" type="xml">
+				<tree string="Pickup Delivery Request" version="7.0">
+					<field name="header_id"/>
+					<field name="product_id"/>
+					<field name="qty"/>
+					<field name="notes"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="pickup_delivery_action_request_line" model="ir.actions.act_window">
+			<field name="name">Lines</field>
+			<field name="res_model">pickup.delivery.request.line</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem sequence="3" id="pickup_delivery_request_line_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_request_line" />
 
 	</data>
 </openerp>
