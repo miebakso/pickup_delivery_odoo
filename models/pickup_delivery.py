@@ -102,7 +102,6 @@ class pickup_delivery_trip(models.Model):
 
 # ==========================================================================================================================
 
-
 class pickup_delivery_trip_line(models.Model):
     _name = "pickup.delivery.trip.line"
     _description = "Pickup and Delivery Trip Line"
@@ -115,10 +114,18 @@ class pickup_delivery_trip_line(models.Model):
         ('employee', 'Employee'),
         ('outsource', 'Outsource'),
     ], 'Delivery Type', required=True, default='employee')
-    # expedition_id =
+    expedition_id = fields.Many2one('pickup.delivery.expedition','Expedition')
     notes = fields.Text('Notes')
     execute_status = fields.Selection([
         ('execute', 'Execute'),
         ('not_execute', 'Not Execute'),
     ], 'Execute Status')
     partner_pic = fields.Char('PIC')
+
+
+# ==========================================================================================================================
+
+class pickup_delivery_expedition(models.Model):
+    _name = "pickup.delivery.expedition"
+
+    name = fields.

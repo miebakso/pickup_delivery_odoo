@@ -140,7 +140,7 @@
 								<field name="request_desc" />
 								<field name="address" />
 								<field name="delivery_type" />
-								<!-- <field name="expedition_id" /> -->
+								<field name="expedition_id" attrs="{'required':['delivery_type','=','outsource']}"/>
 								<field name="notes" />
 								<field name="execute_status" />
 								<field name="partner_pic" />
