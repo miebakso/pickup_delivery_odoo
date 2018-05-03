@@ -5,8 +5,8 @@
 
 		<menuitem sequence="23" id="pickup_delivery_root_menu" name="Pickup And Delivery" />
 		<menuitem sequence="1" id="pickup_delivery_menu" name="Request" parent="pickup_delivery_root_menu" />
-
-	<!-- Pickup and Delivery ================================================================ -->
+		<menuitem sequence="2" id="pickup_delivery_trip" name="Trip" parent="pickup_delivery_root_menu" />
+	<!-- Pickup and Delivery Request ==================================================== -->
 
 		<record model="ir.ui.view" id="pickup_delivery_request_pickup_form">
 			<field name="name">pickup.delivery.request.pickup.form</field>
@@ -73,7 +73,7 @@
 		<menuitem sequence="2" id="pickup_delivery_request_delivery_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_delivery_request" />
 
 
-<!-- Pickup and Delivery Lines ========================================================== -->
+<!-- Pickup and Delivery Request Lines =================================================== -->
 
 		<record model="ir.ui.view" id="pickup_delivery_request_line_form">
 			<field name="name">pickup.delivery.request.line.form</field>
@@ -113,5 +113,62 @@
 
 		<menuitem sequence="3" id="pickup_delivery_request_line_menu" parent="pickup_delivery_menu" action="pickup_delivery_action_request_line" />
 
+<!-- Pickup and Delivery Trip  =================================================== -->
+		<record id="pickup_delivery_trip_form" model="ir.ui.view">
+			<field name="name">pickup.delivery.trip.form</field>
+			<field name="model">pickup.delivery.trip</field>
+			<field name="arch" type="xml">
+				<form>
+					<header>
+						<field name="state" readonly="1" widget="statusbar" />
+						<button string="Ready" type="object" name="action_ready" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}" />
+						<button string="On The Way" type="object" name="action_on_the_way" class="oe_highlight" attrs="{'invisible': [('state','!=','ready')]}" />
+						<button string="Finished" type="object" name="action_finished" class="oe_highlight" attrs="{'invisible': [('state','!=','on_the_way')]}" />
+						<button string="Cancelled" type="object" name="action_cancelled" class="oe_highlight" attrs="{'invisible': [('state','!=','draft'),('state','!=','ready')]}" />
+					</header>
+					<group>
+						<field name="name" />
+						<field name="courier_id" />
+						<field name="vehicle_id" />
+						<field name="departure_date" />
+						<field name="finished_date" />
+					</group>
+					<group string="Lines">
+						<field name="trip_line_ids" nolabel="1">
+							<tree editable="bottom">
+								<field name="request_id" />
+								<field name="request_desc" />
+								<field name="address" />
+								<field name="delivery_type" />
+								<!-- <field name="expedition_id" /> -->
+								<field name="notes" />
+								<field name="execute_status" />
+								<field name="partner_pic" />
+							</tree>
+						</field>
+					</group>
+				</form>
+			</field>
+		</record>
+		<record id="pickup_delivery_trip_tree" model="ir.ui.view">
+			<field name="name">pickup.delivery.trip.tree</field>
+			<field name="model">pickup.delivery.trip</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name" />
+					<field name="courier_id" />
+					<field name="vehicle_id" />
+					<field name="departure_date" />
+					<field name="finished_date" />
+				</tree>
+			</field>
+		</record>
+		<record id="pickup_delivery_trip_action" model="ir.actions.act_window">
+			<field name="name">Pickup Delivery Trip</field>
+			<field name="res_model">pickup.delivery.trip</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<menuitem id="pickup_delivery_trip_menu" sequence="2" parent="pickup_delivery_trip" action="pickup_delivery_trip_action" />
 	</data>
 </openerp>
