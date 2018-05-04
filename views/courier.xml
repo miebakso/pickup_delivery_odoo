@@ -1,0 +1,134 @@
+<openerp>
+	<data>
+		<menuitem sequence="23" id="courier_menu" name="Courier" />
+		<menuitem sequence="1" id="fee_setting" name="Fee Setting" parent="courier_menu" />					<!-- #PROSI -->
+		<menuitem sequence="2" id="fee_log" name="Fee Log" parent="courier_menu" />					<!-- #PROSI -->
+
+		<!-- Fee Setting =============================================================================================================== -->
+		<record id="courier_fee_setting_form" model="ir.ui.view">
+			<field name="name">courier.fee.setting.form</field>
+			<field name="model">courier.fee.setting</field>
+			<field name="arch" type="xml">
+				<form >
+					<header>
+						<!-- <button string="Use Voucher" type="object" name="action_use_voucher" class="oe_highlight" attrs="{'invisible': [('state','!=','generated')]}" confirm="Are you sure to use this voucher?" />
+						<field name="state" readonly="1" widget="statusbar" /> -->
+					</header>
+					<group>
+						<field name="name" />
+						<field name="fee_type" />
+						<field name="trip_fee" attrs="{'invisible': [('fee_type','=','per_address')]}" />
+						<field name="address_fee" attrs="{'invisible': [('fee_type','=','per_trip')]}" />
+						<field name="delivered_bonus" />
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="courier_fee_setting_tree">
+			<field name="name">courier.fee.setting.tree</field>
+			<field name="model">courier.fee.setting</field>
+			<field name="arch" type="xml">
+				<tree >
+						<field name="name" />
+						<field name="fee_type"  />
+						<field name="trip_fee" attrs="{'invisible': [('fee_type','=','per_address')]}" />
+						<field name="address_fee" attrs="{'invisible': [('fee_type','=','per_trip')]}" />
+						<field name="delivered_bonus" />
+				</tree>
+			</field>
+		</record>
+
+		
+
+		<record id="courier_action_fee_setting" model="ir.actions.act_window">
+			<field name="name">Courier Fee Setting</field>
+			<field name="res_model">courier.fee.setting</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem sequence="1" id="courier_menu_fee_setting" parent="fee_setting" action="courier_action_fee_setting" />
+
+		<!-- Courier  =============================================================================================================== -->
+		
+		<record model="ir.ui.view" id="courier_form">
+			<field name="name">hr.employee.form</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//page[3]" position="after">
+					<page string="Fee Setting">
+						<group>
+							<field name="fee_setting_id" />
+						</group>
+						<label string="Fee Log" />
+						<field name="courier_fee_log_ids" />
+					</page>
+				</xpath>
+			</field>
+		</record>
+
+
+		<!-- Log =============================================================================================================== -->
+		
+		<!-- <act_window name="Approve" res_model="courier.fee.log" src_model="courier.fee.log" key2="action_approve" view_mode="tree" target="new" view_type="form" id="act_new_sub_menu" /> -->
+
+		<record id="courier_fee_Log_form" model="ir.ui.view">
+			<field name="name">courier.fee.log.form</field>
+			<field name="model">courier.fee.log</field>
+			<field name="arch" type="xml">
+				<form create="false" edit="false" delete="false" >
+					<header>
+						<button string="Approve" type="object" name="action_approve" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}" confirm="Are you sure to approve this voucher?" />
+						<button string="Pay" type="object" name="action_paid" class="oe_highlight" attrs="{'invisible': [('state','!=','approved')]}" confirm="Are you sure to pay this voucher?" />
+						<button string="Reject" type="object" name="action_reject" class="oe_highlight" attrs="{'invisible': [('state','!=','approved')]}" confirm="Are you sure to reject this voucher?" />
+						<field name="state" readonly="1" widget="statusbar" />
+<!-- 						<button type="object" name="action_reject" string="Reject" states="draft" confirm="Are you sure to reject this point log?" />
+						<field name="state" widget="statusbar" readonly="1" /> -->
+						
+
+					</header>
+					<group >
+						<field name="name" />
+						<field name="fee_type" />
+						<field name="total_fee"  />
+						<field name="courier_id"  />
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="courier_fee_log_tree">
+			<field name="name">courier.fee.log.tree</field>
+			<field name="model">courier.fee.log</field>
+			<field name="arch" type="xml">
+				<tree create="false" edit="false" delete="false" >
+					<field name="name" />
+					<field name="fee_type" />
+					<field name="total_fee"  />
+					<field name="courier_id" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		
+
+		<record id="courier_action_fee_log" model="ir.actions.act_window">
+			<field name="name">Courier Fee Log</field>
+			<field name="res_model">courier.fee.log</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem sequence="1" id="courier_menu_fee_log" parent="fee_log" action="courier_action_fee_log" />
+
+		<!-- Fee Setting =============================================================================================================== -->
+
+
+	</data>
+</openerp>
+
+
+
