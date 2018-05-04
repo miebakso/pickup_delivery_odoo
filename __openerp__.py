@@ -15,7 +15,8 @@
 	],
 	'depends': ['base','web','account'],	
 	'data': [
-		'views/pickup_delivery_view.xml',	
+		'views/pickup_delivery_view.xml',
+		'views/sequence.xml',
 	],
 	'demo': [
 	],

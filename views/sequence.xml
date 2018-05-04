@@ -1,9 +1,15 @@
 <openerp>
 	<data>
-		<record model="ir.sequence" id="pikcup_delivery_request_seqence">
-		    <field name="name">Number Sequence</field>
-		    <field name="code">pickup.delivery.request</field>
-		    <field name="prefix">XXXX</field>
+
+		<record id="pikcup_delivery_request_seqence_type" model="ir.sequence.type">
+	        <field name="name">Number Code</field>
+	        <field name="code">pickup.delivery.request.sequence</field>
+	    </record>
+
+		<record id="pikcup_delivery_request_seqence" model="ir.sequence">
+		    <field name="name">Number Code</field>
+		    <field name="code">pickup.delivery.request.sequence</field>
+		    <field name="prefix">%(year)s/%(month)s/</field>
 		    <field name="padding">4</field>
 		</record>
 	</data>
