@@ -60,7 +60,7 @@ class pickup_delivery_trip(models.Model):
     _name = "pickup.delivery.trip"
     _description = "Pickup and delivery trip "
 
-    name = fields.Char('No. Trip', require=True)
+    name = fields.Char('No. Trip')
     courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', require=True)
     vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', ondelete='restrict', require=True)
     departure_date = fields.Datetime('Departure Date')
@@ -109,7 +109,7 @@ class pickup_delivery_trip_line(models.Model):
     trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete='cascade')
     request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain=[('state', '=', 'ready'), ('state', '=', 'delayed')])
     request_desc = fields.Text('Description')
-    address = fields.Text('Address')
+    address = fields.Text('Address', compute="_compute_address")
     delivery_type = fields.Selection([
         ('employee', 'Employee'),
         ('outsource', 'Outsource'),
@@ -122,10 +122,17 @@ class pickup_delivery_trip_line(models.Model):
     ], 'Execute Status')
     partner_pic = fields.Char('PIC')
 
+    @api.multi
+    @api.depends('request_id')
+    def _compute_address(self):
+        request_id_env = self.env['pickup.delivery.request']
+        for record in self:
+            record.address = request_id_env.browse(record.request_id.id).address
+
 
 # ==========================================================================================================================
 
 class pickup_delivery_expedition(models.Model):
     _name = "pickup.delivery.expedition"
 
-    name = fields.
+    name = fields.Char("Expedition")

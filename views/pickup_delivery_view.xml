@@ -121,7 +121,7 @@
 				<form>
 					<header>
 						<field name="state" readonly="1" widget="statusbar" />
-						<button string="Ready" type="object" name="action_ready" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}" />
+						<button string="Ready" type="object" name="action_ready" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')], 'required':[('trip_line_ids','=',True)]}" />
 						<button string="On The Way" type="object" name="action_on_the_way" class="oe_highlight" attrs="{'invisible': [('state','!=','ready')]}" />
 						<button string="Finished" type="object" name="action_finished" class="oe_highlight" attrs="{'invisible': [('state','!=','on_the_way')]}" />
 						<button string="Cancelled" type="object" name="action_cancelled" class="oe_highlight" attrs="{'invisible': [('state','!=','draft'),('state','!=','ready')]}" />
@@ -140,7 +140,7 @@
 								<field name="request_desc" />
 								<field name="address" />
 								<field name="delivery_type" />
-								<field name="expedition_id" attrs="{'required':['delivery_type','=','outsource']}"/>
+								<field name="expedition_id" attrs="{'required':[('delivery_type','=','outsource')]}" />
 								<field name="notes" />
 								<field name="execute_status" />
 								<field name="partner_pic" />
