@@ -40,7 +40,7 @@ class courier_fee_log(models.Model):
 	_description = "Courier Log Fee"
 
 	courier_id = fields.Many2one('hr.employee', 'Courier', ondelete="cascade")
-	# trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete="delete")
+	trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete="cascade")
 	name = fields.Char('Name', compute="_compute_name", store=True)
 	total_fee = fields.Float('Total fee')
 	state = fields.Selection((
@@ -55,14 +55,10 @@ class courier_fee_log(models.Model):
 		), 'fee_type', default="per_trip")
 
 	@api.multi
-	@api.depends('name','total_fee', 'create_date')
+	@api.depends('name' , 'fee_type' , 'create_date')
 	def _compute_name(self):
 		for record in self:
-			record.name = record.fee_type + ' fee for trip ' + record.create_date
-			# record.write({
-			# 	'name':  record.fee_type + ' fee for trip ' + record.create_date
-			# })
-
+			record.name =  str(record.fee_type) + ' fee for trip ' + record.create_date.strftime("%B %d, %Y")
 	
 
 	@api.one
@@ -111,9 +107,17 @@ class courier_fee_log_report(models.TransientModel):
 
 	date_from = fields.Date('Date from')
 	date_to = fields.Date('Date to')
-	courier_id = fields.Many2one('hr.employee')
+	courier_id = fields.Many2one('hr.employee',domain=[('fee_setting_id' ,'!=',False)])
 
 	
 		
+# ==========================================================================================================================
 
 
+# class ClassABCD(ReportXlsx):
+
+# 	def generate_xlsx_report(self, workbook, data, lines):
+# 		current_date = strftime("%Y-%m-%d", gmtime())
+# 		logged_users = self.env['res.users'].search([('id', '=', data['create_uid'][0])])
+# 		sheet = workbook.add_worksheet()
+# 		# add the rest of the report code here

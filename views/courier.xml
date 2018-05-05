@@ -86,11 +86,10 @@
 						<field name="state" readonly="1" widget="statusbar" />
 <!-- 						<button type="object" name="action_reject" string="Reject" states="draft" confirm="Are you sure to reject this point log?" />
 						<field name="state" widget="statusbar" readonly="1" /> -->
-						
-
 					</header>
 					<group >
 						<field name="name" />
+						<field name="trip_id" />
 						<field name="fee_type" />
 						<field name="total_fee"  />
 						<field name="courier_id"  />
@@ -105,6 +104,7 @@
 			<field name="arch" type="xml">
 				<tree  >
 					<field name="name" />
+					<field name="trip_id" />
 					<field name="fee_type" />
 					<field name="total_fee"  />
 					<field name="courier_id" />

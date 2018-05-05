@@ -97,6 +97,14 @@ class pickup_delivery_trip(models.Model):
             'state': 'finished',
             'finished_time': fields.Date.context_today(self),
         })
+        # courier_fee = self.env['courier.fee.log']
+        # courier_fee.create({
+        # 	'courier_id': self.courier_id.id,
+        # 	'trip_id': self.id,
+        # 	'total_fee': courier_fee.calculate_fee(),
+        # 	'state': 'draft' ,
+        # 	'fee_type': self.courier_id.fee_setting_id,
+        # })
 
     @api.one
     def action_cancelled(self):

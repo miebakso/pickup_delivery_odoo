@@ -13,7 +13,7 @@
 	'author': 'Christyan Juniady and Associates',
 	'images': [
 	],
-	'depends': ['base','web','account','chjs_dated_setting','hr','mail'],	
+	'depends': ['base','web','account','chjs_dated_setting','hr','mail','fleet'],	
 	'data': [
 		'views/pickup_delivery_view.xml',
 		'views/courier.xml',
