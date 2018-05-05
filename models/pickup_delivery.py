@@ -37,6 +37,10 @@ class pickup_delivery_request(models.Model):
 			record.address = res_partner_env.browse(record.partner_id.id).street
 
 	
+	@api.model
+	def create(self, vals):
+		vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.request.sequence')
+		return super(pickup_delivery_request, self).create(vals)
 
 
 class pickup_delivery_request_line(models.Model):

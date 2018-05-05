@@ -16,7 +16,8 @@
 	'depends': ['base','web','account','chjs_dated_setting','hr','mail'],	
 	'data': [
 		'views/pickup_delivery_view.xml',
-		'views/courier.xml',	
+		'views/courier.xml',
+		'views/sequence.xml',
 	],
 	'demo': [
 	],
