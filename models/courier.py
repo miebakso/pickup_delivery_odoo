@@ -55,11 +55,15 @@ class courier_fee_log(models.Model):
 		), 'fee_type', default="per_trip")
 
 	@api.multi
+	@api.depends('name','total_fee', 'create_date')
 	def _compute_name(self):
 		for record in self:
-			self.write({
-				'name': self.fee_type + ' fee for trip' + self.create_date
-			})
+			record.name = record.fee_type + ' fee for trip ' + record.create_date
+			# record.write({
+			# 	'name':  record.fee_type + ' fee for trip ' + record.create_date
+			# })
+
+	
 
 	@api.one
 	def action_approve(self):

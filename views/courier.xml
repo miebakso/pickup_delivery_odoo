@@ -78,7 +78,7 @@
 			<field name="name">courier.fee.log.form</field>
 			<field name="model">courier.fee.log</field>
 			<field name="arch" type="xml">
-				<form create="false" edit="false" delete="false" >
+				<form  >
 					<header>
 						<button string="Approve" type="object" name="action_approve" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}" confirm="Are you sure to approve this voucher?" />
 						<button string="Pay" type="object" name="action_paid" class="oe_highlight" attrs="{'invisible': [('state','!=','approved')]}" confirm="Are you sure to pay this voucher?" />
@@ -103,7 +103,7 @@
 			<field name="name">courier.fee.log.tree</field>
 			<field name="model">courier.fee.log</field>
 			<field name="arch" type="xml">
-				<tree create="false" edit="false" delete="false" >
+				<tree  >
 					<field name="name" />
 					<field name="fee_type" />
 					<field name="total_fee"  />
