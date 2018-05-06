@@ -58,7 +58,7 @@ class courier_fee_log(models.Model):
 	@api.depends('name' , 'fee_type' , 'create_date')
 	def _compute_name(self):
 		for record in self:
-			record.name =  str(record.fee_type) + ' fee for trip ' + record.create_date.strftime("%B %d, %Y")
+			record.name =  str(record.fee_type) + ' fee for trip ' + record.create_date
 	
 
 	@api.one
@@ -67,6 +67,13 @@ class courier_fee_log(models.Model):
 			'state': 'approved',
 		})
 
+	@api.multi
+	def action_approve_all(self):
+		context = dict(self._context or {})
+		invoices = self.browse(context.get('active_ids'))
+		for record in invoices:
+			record.write({'state' : 'approved'})
+		return True
 
 	@api.one
 	def action_paid(self):
@@ -107,7 +114,7 @@ class courier_fee_log_report(models.TransientModel):
 
 	date_from = fields.Date('Date from')
 	date_to = fields.Date('Date to')
-	courier_id = fields.Many2one('hr.employee',domain=[('fee_setting_id' ,'!=',False)])
+	courier_id = fields.Many2one('hr.employee','Courier ID' , domain=[('fee_setting_id' ,'!=',False)])
 
 	
 		
