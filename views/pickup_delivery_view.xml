@@ -127,7 +127,7 @@
 						<button string="Cancelled" type="object" name="action_cancelled" class="oe_highlight" attrs="{'invisible': [('state','!=','draft'),('state','!=','ready')]}" />
 					</header>
 					<group>
-						<field name="name" readoly="1" />
+						<field name="name" readonly="1" />
 						<field name="courier_id" />
 						<field name="vehicle_id" />
 						<field name="departure_date" />
