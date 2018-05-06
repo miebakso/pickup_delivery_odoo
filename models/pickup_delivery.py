@@ -62,7 +62,7 @@ class pickup_delivery_request_line(models.Model):
 
 class pickup_delivery_trip(models.Model):
     _name = "pickup.delivery.trip"
-    _description = "Pickup and delivery trip "
+    _description = "Pickup and delivery trip"
 
     name = fields.Char('No. Trip')
     courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', require=True)
@@ -93,24 +93,34 @@ class pickup_delivery_trip(models.Model):
     def action_on_the_way(self):
         self.write({
             'state': 'on_the_way',
-            'departure_time': fields.Date.context_today(self),
+            'departure_date': fields.Date.context_today(self),
         })
 
     @api.one
-    @api.depends('trip_line_ids')
     def action_finished(self):
         trip_line_ids_env = self.env['pickup.delivery.trip.line']
 
-        self.write({
-            'state': 'finished',
-            'finished_time': fields.Date.context_today(self),
-        })
+        if(trip_line_ids_env != False):
+            for record in trip_line_ids_env:
+                if(record.executes_status == True):
+                    if(record.executes_status == 'execute'):
+                        record.browse(trip_line_ids_env.request_id).write({
+                            'state':'excecuted'
+                        })
+                    else:
+                        record.browse(trip_line_ids_env.request_id).write({
+                            'state':'delayed'
+                        })
+            self.write({
+                'state': 'finished',
+                'finished_date': fields.Date.context_today(self),
+            })
         courier_fee = self.env['courier.fee.log']
         courier_fee.create({
-        	'courier_id': self.courier_id.id,
-        	'trip_id': self.id,
-        	'state': 'draft' ,
-        	'fee_type': self.courier_id.fee_setting_id.fee_type,
+            'courier_id': self.courier_id.id,
+            'trip_id': self.id,
+            'state': 'draft' ,
+            'fee_type': self.courier_id.fee_setting_id.fee_type,
         })
         courier_fee.write({
             'total_fee': courier_fee.calculate_fee(self),
@@ -129,7 +139,7 @@ class pickup_delivery_trip_line(models.Model):
     _description = "Pickup and Delivery Trip Line"
 
     trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete='cascade')
-    request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain=[('state', '=', 'ready'), ('state', '=', 'delayed')])
+    request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain="[('state', 'in', ['requested','delayed'])]")
     request_desc = fields.Text('Description', compute="_compute_desc")
     address = fields.Text('Address', compute="_compute_address")
     delivery_type = fields.Selection([
@@ -154,9 +164,10 @@ class pickup_delivery_trip_line(models.Model):
     @api.multi
     @api.depends('request_id')
     def _compute_desc(self):
-        res_partner_env = self.env['res.partner']
+        request_id_env = self.env['pickup.delivery.request']
+        res_partner_env = self.env['res.partner'];
         for record in self:
-            record.request_desc = res_partner_env.browse(record.request_id.id).name
+            record.request_desc = "%s\n"%(request_id_env.browse(record.request_id.id).name)
 
 
 # ==========================================================================================================================
