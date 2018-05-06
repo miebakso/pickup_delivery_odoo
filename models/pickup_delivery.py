@@ -99,39 +99,22 @@ class pickup_delivery_trip(models.Model):
     @api.one
     def action_finished(self):
         trip_line_ids_env = self.env['pickup.delivery.trip.line']
-<<<<<<< HEAD
         if(trip_line_ids_env != False):
             for record in trip_line_ids_env:
                 if(record.executes_status == True):
                     if(record.executes_status == 'execute'):
-                        # record.browse(trip_line_ids_env.request_id).write({
-                        #     'state':'excecuted'
-                        # })
+                        record.browse(trip_line_ids_env.request_id).write({
+                            'state':'excecuted'
+                        })
                     else:
-                        # record.browse(trip_line_ids_env.request_id).write({
-                        #     'state':'delayed'
-                        # })
+                        record.browse(trip_line_ids_env.request_id).write({
+                            'state':'delayed'
+                        })
             self.write({
                 'state': 'finished',
                 'finished_date': fields.Date.context_today(self),
             })
         
-=======
-
-        self.write({
-            'state': 'finished',
-            'finished_time': fields.Date.context_today(self),
-        })
-        # courier_fee = self.env['courier.fee.log']
-        # courier_fee.create({
-        # 	'courier_id': self.courier_id.id,
-        # 	'trip_id': self.id,
-        # 	'total_fee': courier_fee.calculate_fee(),
-        # 	'state': 'draft' ,
-        # 	'fee_type': self.courier_id.fee_setting_id,
-        # })
-
->>>>>>> 0914d501e3afaaf35c17b97457c7741564edd14a
     @api.one
     def action_cancelled(self):
         self.write({
