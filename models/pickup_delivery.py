@@ -103,13 +103,13 @@ class pickup_delivery_trip(models.Model):
             for record in trip_line_ids_env:
                 if(record.executes_status == True):
                     if(record.executes_status == 'execute'):
-                        record.browse(trip_line_ids_env.request_id.id).write({
-                            'state':'excecuted'
-                        })
+                        # record.browse(trip_line_ids_env.request_id).write({
+                        #     'state':'excecuted'
+                        # })
                     else:
-                        record.browse(trip_line_ids_env.request_id.id).write({
-                            'state':'delayed'
-                        })
+                        # record.browse(trip_line_ids_env.request_id).write({
+                        #     'state':'delayed'
+                        # })
             self.write({
                 'state': 'finished',
                 'finished_date': fields.Date.context_today(self),
