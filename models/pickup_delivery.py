@@ -78,6 +78,11 @@ class pickup_delivery_trip(models.Model):
     ], 'State', required=True, default='draft')
     trip_line_ids = fields.One2many('pickup.delivery.trip.line', 'trip_id', 'Trip Lines', required=True)
 
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.trip.sequence')
+        return super(pickup_delivery_trip, self).create(vals);
+
     @api.one
     def action_ready(self):
         self.write({
@@ -92,7 +97,10 @@ class pickup_delivery_trip(models.Model):
         })
 
     @api.one
+    @api.depends('trip_line_ids')
     def action_finished(self):
+        trip_line_ids_env = self.env['pickup.delivery.trip.line']
+
         self.write({
             'state': 'finished',
             'finished_time': fields.Date.context_today(self),
@@ -120,7 +128,7 @@ class pickup_delivery_trip_line(models.Model):
 
     trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete='cascade')
     request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain=[('state', '=', 'ready'), ('state', '=', 'delayed')])
-    request_desc = fields.Text('Description')
+    request_desc = fields.Text('Description', compute="_compute_desc")
     address = fields.Text('Address', compute="_compute_address")
     delivery_type = fields.Selection([
         ('employee', 'Employee'),
@@ -140,6 +148,13 @@ class pickup_delivery_trip_line(models.Model):
         request_id_env = self.env['pickup.delivery.request']
         for record in self:
             record.address = request_id_env.browse(record.request_id.id).address
+
+    @api.multi
+    @api.depends('request_id')
+    def _compute_desc(self):
+        res_partner_env = self.env['res.partner']
+        for record in self:
+            record.request_desc = res_partner_env.browse(record.request_id.id).name
 
 
 # ==========================================================================================================================
