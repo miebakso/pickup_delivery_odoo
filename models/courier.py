@@ -71,12 +71,8 @@ class courier_fee_log(models.Model):
 
 	@api.multi
 	def action_approve_all(self):
-		test1 = self.env['courier.fee.log'].search([])
-		_logger.debug(len(test1))
 		context = dict(self._context or {})
 		invoices = self.browse(context.get('active_ids'))
-		test = self.env['courier.fee.log'].search([])
-		_logger.debug(len(test))
 		for record in invoices:
 			# _logger.debug(record)
 			record.write({'state' : 'approved'})
@@ -100,23 +96,25 @@ class courier_fee_log(models.Model):
 		
 
 	def calculate_fee(self, trip):
-		if(trip.courier_id.fee_setting_id == False):
-			raise ValidationError("Courer doesn't have fee_setting_id")
-
-		if(trip.courier_id.fee_setting_id.trip_fee ):
-			fee_total = trip.courier_id.fee_setting_id.address_fee
-			_logger.debug("==================================================="+fee_total)
+		fee_total = 0
+		if(trip.courier_id.fee_setting_id):
+			if(trip.courier_id.fee_setting_id.trip_fee==0):
+				fee_total = trip.courier_id.fee_setting_id.address_fee
+			else:
+				fee_total = trip.courier_id.fee_setting_id.trip_fee
+			_logger.debug(fee_total)
+			executed_counter = 0
+			for record in trip.trip_line_ids:
+				if(record.execute_status == 'executed'):
+					executed_counter = executed_counter + 1
+			fee_total = fee_total + (executed_counter * trip.courier_id.fee_setting_id.delivered_bonus)
+			self.write({
+				'total_fee': fee_total,
+			})
 		else:
-			fee_total = trip.courier_id.fee_setting_id.trip_fee
-
-		executed_counter = 0
-		for record in trip.trip_line_ids:
-			if(record.execute_status == 'executed'):
-				executed_counter = executed_counter + 1
-		fee_total = fee_total + (executed_counter * trip.courier_id.fee_setting_id.delivered_bonus)
-		self.write({
-			'total_fee': 'fee_total',
-		})
+			raise ValidationError("Courier doesn't have fee_setting_id")
+		
+		return fee_total
 
 # ==========================================================================================================================
 

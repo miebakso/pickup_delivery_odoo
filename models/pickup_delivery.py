@@ -116,16 +116,15 @@ class pickup_delivery_trip(models.Model):
                 'finished_date': fields.Date.context_today(self),
             })
         courier_fee = self.env['courier.fee.log']
+        total_fee = courier_fee.calculate_fee(self)
         courier_fee.create({
             'courier_id': self.courier_id.id,
             'trip_id': self.id,
             'state': 'draft' ,
             'fee_type': self.courier_id.fee_setting_id.fee_type,
+            'total_fee': total_fee,
         })
-        courier_fee.write({
-            'total_fee': courier_fee.calculate_fee(self),
-        })
-
+ 
     @api.one
     def action_cancelled(self):
         self.write({
