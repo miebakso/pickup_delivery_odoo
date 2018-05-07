@@ -18,6 +18,7 @@
 		'views/pickup_delivery_view.xml',
 		'views/courier.xml',
 		'views/sequence.xml',
+		'reports/report_document.xml',
 	],
 	'demo': [
 	],
