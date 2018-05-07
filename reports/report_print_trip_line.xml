@@ -1,0 +1,33 @@
+<openerp>
+	<data>
+
+		<template id="report_print_trip_line_template">
+			<t t-foreach="docs" t-as="o">
+				<t t-foreach="o.trip_line_ids" t-as="trip">
+					<t t-call="report.html_container">
+						<t t-call="pickup_delivery.report_print_trip_line_document_template" />
+					</t>
+				</t>
+			</t>
+		</template>
+
+		<template id="report_print_trip_line_document_template">
+			<div class="page">
+				<!-- PENGATURAN TEMPLATE -->
+					
+					<span t-field="trip.request_id.name" />
+					<span t-field="trip.address" />
+					<h2>====================</h2>
+				<!--<span t-field="trip.address" />
+					<span t-field="trip.delivery_type" />
+					<span t-field="trip.expedition_id.name" />
+					<span t-field="trip.notes" />
+					<span t-field="trip.execute_status" />
+					<span t-field="trip.partner_pic" />
+				-->
+				
+			</div>
+		</template>
+
+	</data>
+</openerp>

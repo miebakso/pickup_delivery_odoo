@@ -23,7 +23,7 @@ class pickup_delivery_request(models.Model):
 		('requested', 'Requested'),
 		('ready', 'Ready'),
 		('delayed', 'Delayed'),
-		('excecuted', 'Executed'),
+		('executed', 'Executed'),
 		('canceled', 'Canceled'),
 	], 'State', required=True, default='requested')
 	executed_date = fields.Datetime('Executed Date')
@@ -42,6 +42,7 @@ class pickup_delivery_request(models.Model):
 		vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.request.sequence')
 		return super(pickup_delivery_request, self).create(vals)
 
+# ==========================================================================================================================
 
 class pickup_delivery_request_line(models.Model):
 	
@@ -65,8 +66,8 @@ class pickup_delivery_trip(models.Model):
     _description = "Pickup and delivery trip"
 
     name = fields.Char('No. Trip')
-    courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', require=True)
-    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', ondelete='restrict', require=True)
+    courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', required=True)
+    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', ondelete='restrict', required=True)
     departure_date = fields.Datetime('Departure Date')
     finished_date = fields.Datetime('Finished Date')
     state = fields.Selection([
@@ -99,17 +100,18 @@ class pickup_delivery_trip(models.Model):
     @api.multi
     def action_finished(self):
         for data in self:
-            for record in data.trip_line.ids:
-                if record.executes_status == True:
-                    if record.executes_status == 'execute':
+            for record in data.trip_line_ids:
+                if record.execute_status:
+                    print 'asd'
+                    if record.execute_status == 'execute':
                         record.request_id.write({
-                            'state':'excecuted'
+                            'state':'executed'
                         })
                     else:
                         record.request_id.write({
                             'state':'delayed'
                         })
-            self.write({
+            data.write({
                 'state': 'finished',
                 'finished_date': fields.Date.context_today(self),
             })
