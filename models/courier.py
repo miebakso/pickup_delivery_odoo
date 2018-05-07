@@ -5,6 +5,10 @@ from openerp.exceptions import ValidationError
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
 import logging
 _logger = logging.getLogger(__name__)
+import xlwt
+import base64
+import cStringIO
+from datetime import datetime
 
 # ==========================================================================================================================
 
@@ -72,14 +76,16 @@ class courier_fee_log(models.Model):
 	@api.multi
 	def action_approve_all(self):
 		context = dict(self._context or {})
-		invoices = self.browse(context.get('active_ids'))
+		invoices = (context.get('active_ids'))
+		_logger.debug(invoices)
 		for record in invoices:
 			# _logger.debug(record)
-			record.write({'state' : 'approved'})
+			fee_log = self.browse(record)
+			fee_log.write({'state' : 'approved'})
 
 		test2 = self.env['courier.fee.log'].search([])
 		_logger.debug(len(test2))
-		return True
+		
 
 	@api.one
 	def action_paid(self):
@@ -123,13 +129,76 @@ class courier_fee_log_report(models.TransientModel):
 	_inherit = "chjs.dated.setting"
 	_description = "Setting fee untuk courier"
 
-	name = fields.Char('Nama')
+	name = fields.Char('Name')
+	file_name = fields.Char('File Name')
 	date_from = fields.Date('Date from')
 	date_to = fields.Date('Date to')
 	courier_id = fields.Many2one('hr.employee','Courier ID' , domain=[('fee_setting_id' ,'!=',False)])
+	report = fields.Binary('Prepared file', filters='.xls', readonly=True)
 
 	
-		
+	@api.multi
+	def generate_xls_report(self):
+		self.ensure_one()
+
+		wb1 = xlwt.Workbook(encoding='utf-8')
+		ws1 = wb1.add_sheet('Invoices Details')
+		fp = cStringIO.StringIO()
+
+		#Content/Text style
+		header_content_style = xlwt.easyxf("font: name Helvetica size 20 px, bold 1, height 170;")
+		sub_header_style = xlwt.easyxf("font: name Helvetica size 10 px, bold 1, height 170;")
+		sub_header_content_style = xlwt.easyxf("font: name Helvetica size 10 px, height 170;")
+		line_content_style = xlwt.easyxf("font: name Helvetica, height 170;")
+		row = 1
+		col = 0
+
+		ws1.row(row).height = 500
+
+		ws1.write_merge(row,row, 2, 6, self.courier_id.name+"'s Fee Log" , header_content_style)
+		row += 2
+		ws1.write(row, col+1, "From :", sub_header_style)
+		ws1.write(row, col+2, datetime.strftime(datetime.strptime(self.date_from,DEFAULT_SERVER_DATE_FORMAT),"%d/%m/%Y"), sub_header_content_style)
+		row += 1
+		ws1.write(row, col+1, "To :", sub_header_style)
+		ws1.write(row, col+2, datetime.strftime(datetime.strptime(self.date_to,DEFAULT_SERVER_DATE_FORMAT),"%d/%m/%Y"), sub_header_content_style)
+		row += 1
+		ws1.write(row,col+1,"Courier",sub_header_style)
+		ws1.write(row,col+2,"Number of Trip",sub_header_style)
+		ws1.write(row,col+3,"Total Fee",sub_header_style)
+		ws1.write(row,col+4,"Paid",sub_header_style)
+
+		row += 1
+		#Searching for customer invoices
+		fee_logs = self.env['courier.fee.log'].search([('courier_id','=',self.courier_id.id),('state','!=','rejected')])
+		all_inv_total = 0
+		total_fee=0
+		no_trip =0
+		paid = 0
+		for record in fee_logs:
+			no_trip += 1
+			total_fee += record.total_fee
+			if(record.state == 'paid'):
+				paid +=  record.total_fee
+
+
+		ws1.write(row,col+1,self.courier_id.name,line_content_style)
+		ws1.write(row,col+2,no_trip,line_content_style)
+		ws1.write(row,col+3,total_fee,line_content_style)
+		ws1.write(row,col+4,paid,line_content_style)
+	
+		wb1.save(fp)
+		out = base64.encodestring(fp.getvalue())
+		self.write({'report': out, 'file_name':str(self.courier_id.name)+"'s report "+str(self.date_from)+' to '+str(self.date_to)+'.xls'})
+		return {
+			'type': 'ir.actions.act_window',
+			'res_model': 'courier.fee.log.report',
+			'view_mode': 'form',
+			'view_type': 'form',
+			'res_id': self.id,
+			'views': [(False, 'form')],
+			'target': 'new',
+		}
 # ==========================================================================================================================
 
 

@@ -1,8 +1,8 @@
 <openerp>
 	<data>
 		<menuitem sequence="23" id="courier_menu" name="Courier" />
-		<menuitem sequence="1" id="fee_setting" name="Fee Setting" parent="courier_menu" />					<!-- #PROSI -->
-		<menuitem sequence="2" id="fee_log" name="Fee Log" parent="courier_menu" />					<!-- #PROSI -->
+		<menuitem sequence="1" id="fee_setting" name="Fee Setting" parent="courier_menu" />                 <!-- #PROSI -->
+		<menuitem sequence="2" id="fee_log" name="Fee Log" parent="courier_menu" />                 <!-- #PROSI -->
 
 		<!-- Fee Setting =============================================================================================================== -->
 		<record id="courier_fee_setting_form" model="ir.ui.view">
@@ -83,8 +83,6 @@
 						<button string="Pay" type="object" name="action_paid" class="oe_highlight" attrs="{'invisible': [('state','!=','approved')]}" confirm="Are you sure to pay this voucher?" />
 						<button string="Reject" type="object" name="action_reject" class="oe_highlight" attrs="{'invisible': [('state','!=','approved')]}" confirm="Are you sure to reject this voucher?" />
 						<field name="state" readonly="1" widget="statusbar" />
-<!-- 						<button type="object" name="action_reject" string="Reject" states="draft" confirm="Are you sure to reject this point log?" />
-						<field name="state" widget="statusbar" readonly="1" /> -->
 					</header>
 					<group >
 						<field name="name" />
@@ -137,7 +135,7 @@
 			/>
 		
 		<record model="ir.values" id="action_testing">
-	    	<!-- <field name="model_id" ref="courier.model" /> -->
+			<!-- <field name="model_id" ref="courier.model" /> -->
 			<field name="name">Reverse Moves</field>
 			<field name="key2">client_action_multi</field>
 			<field name="value" eval="'ir.actions.act_window,' +str(ref('approve_all'))" />
@@ -157,7 +155,7 @@
 
 		<menuitem sequence="1" id="courier_menu_fee_log" parent="fee_log" action="courier_action_fee_log" />
 
-		<!-- Fee Setting =============================================================================================================== -->
+		<!-- Fee Log Report =============================================================================================================== -->
 
 		<record id="corier_fee_report_form" model="ir.ui.view">
 			<field name="name">courier.fee.log.report.form</field>
@@ -166,10 +164,16 @@
 				<form >
 					<group>
 						<field name="name" />
+						<field name="file_name" invisible="1" />
 						<field name="date_from" />
 						<field name="date_to" />
 						<field name="courier_id" />
+						<field name="report" filename="file_name" />
 					</group>
+					<footer >
+						<button name="generate_xls_report" string="Export XLS" type="object" class="oe_highlight" />
+						<button special="cancel" string="Cancel" class="oe_highlight" />
+					</footer>
 				</form>
 			</field>
 		</record>
