@@ -3,6 +3,8 @@ from dateutil.relativedelta import relativedelta
 from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
+import logging
+_logger = logging.getLogger(__name__)
 
 # ==========================================================================================================================
 
@@ -39,8 +41,8 @@ class courier_fee_log(models.Model):
 	_inherit = "mail.thread"
 	_description = "Courier Log Fee"
 
-	courier_id = fields.Many2one('hr.employee', 'Courier', ondelete="cascade")
-	trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete="cascade")
+	courier_id = fields.Many2one('hr.employee', 'Courier', ondelete="cascade", required=True)
+	trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete="cascade", required=True)
 	name = fields.Char('Name', compute="_compute_name", store=True)
 	total_fee = fields.Float('Total fee')
 	state = fields.Selection((
@@ -69,10 +71,18 @@ class courier_fee_log(models.Model):
 
 	@api.multi
 	def action_approve_all(self):
+		test1 = self.env['courier.fee.log'].search([])
+		_logger.debug(len(test1))
 		context = dict(self._context or {})
 		invoices = self.browse(context.get('active_ids'))
+		test = self.env['courier.fee.log'].search([])
+		_logger.debug(len(test))
 		for record in invoices:
+			# _logger.debug(record)
 			record.write({'state' : 'approved'})
+
+		test2 = self.env['courier.fee.log'].search([])
+		_logger.debug(len(test2))
 		return True
 
 	@api.one
@@ -89,18 +99,21 @@ class courier_fee_log(models.Model):
 
 		
 
-	def calculate_fee(trip):
+	def calculate_fee(self, trip):
 		if(trip.courier_id.fee_setting_id == False):
 			raise ValidationError("Courer doesn't have fee_setting_id")
 
-		fee_total = trip.courier_id.fee_setting_id.trip_fee
-		if(trip.courier_id.address_fee == 0):
+		if(trip.courier_id.fee_setting_id.trip_fee ):
 			fee_total = trip.courier_id.fee_setting_id.address_fee
+			_logger.debug("==================================================="+fee_total)
+		else:
+			fee_total = trip.courier_id.fee_setting_id.trip_fee
+
 		executed_counter = 0
 		for record in trip.trip_line_ids:
 			if(record.execute_status == 'executed'):
 				executed_counter = executed_counter + 1
-		fee_total = fee_total + (executed_counter * trip.courier_id.fee_setting_id.devlivered_bonus)
+		fee_total = fee_total + (executed_counter * trip.courier_id.fee_setting_id.delivered_bonus)
 		self.write({
 			'total_fee': 'fee_total',
 		})
@@ -112,6 +125,7 @@ class courier_fee_log_report(models.TransientModel):
 	_inherit = "chjs.dated.setting"
 	_description = "Setting fee untuk courier"
 
+	name = fields.Char('Nama')
 	date_from = fields.Date('Date from')
 	date_to = fields.Date('Date to')
 	courier_id = fields.Many2one('hr.employee','Courier ID' , domain=[('fee_setting_id' ,'!=',False)])

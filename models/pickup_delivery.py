@@ -98,12 +98,23 @@ class pickup_delivery_trip(models.Model):
 
     @api.multi
     def action_finished(self):
+<<<<<<< HEAD
         for data in self:
             for record in data.trip_line_ids:
                 if record.execute_status == True:
                     if record.execute_status == 'execute':
                         record.request_id.write({
                             'state':'executed'
+=======
+        trip_line_ids_env = self.env['pickup.delivery.trip.line']
+
+        if(trip_line_ids_env != False):
+            for record in trip_line_ids_env:
+                if(record.executes_status == True):
+                    if(record.executes_status == 'execute'):
+                        record.browse(trip_line_ids_env.request_id).write({
+                            'state':'excecuted'
+>>>>>>> 3c8587817fd9002527ca63aba2bf1f697dfcef60
                         })
                     else:
                         record.request_id.write({
@@ -113,8 +124,23 @@ class pickup_delivery_trip(models.Model):
                 'state': 'finished',
                 'finished_date': fields.Date.context_today(self),
             })
+<<<<<<< HEAD
         
     @api.multi
+=======
+        courier_fee = self.env['courier.fee.log']
+        courier_fee.create({
+            'courier_id': self.courier_id.id,
+            'trip_id': self.id,
+            'state': 'draft' ,
+            'fee_type': self.courier_id.fee_setting_id.fee_type,
+        })
+        courier_fee.write({
+            'total_fee': courier_fee.calculate_fee(self),
+        })
+
+    @api.one
+>>>>>>> 3c8587817fd9002527ca63aba2bf1f697dfcef60
     def action_cancelled(self):
         self.write({
             'state': 'cancelled'
