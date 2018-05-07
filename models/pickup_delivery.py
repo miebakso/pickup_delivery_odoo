@@ -42,6 +42,7 @@ class pickup_delivery_request(models.Model):
 		vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.request.sequence')
 		return super(pickup_delivery_request, self).create(vals)
 
+# ==========================================================================================================================
 
 class pickup_delivery_request_line(models.Model):
 	
