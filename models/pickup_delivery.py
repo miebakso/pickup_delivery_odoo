@@ -23,7 +23,7 @@ class pickup_delivery_request(models.Model):
 		('requested', 'Requested'),
 		('ready', 'Ready'),
 		('delayed', 'Delayed'),
-		('excecuted', 'Executed'),
+		('executed', 'Executed'),
 		('canceled', 'Canceled'),
 	], 'State', required=True, default='requested')
 	executed_date = fields.Datetime('Executed Date')
@@ -63,11 +63,11 @@ class pickup_delivery_request_line(models.Model):
 
 class pickup_delivery_trip(models.Model):
     _name = "pickup.delivery.trip"
-    _description = "Pickup and delivery trip "
+    _description = "Pickup and delivery trip"
 
     name = fields.Char('No. Trip')
-    courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', require=True)
-    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', ondelete='restrict', require=True)
+    courier_id = fields.Many2one('hr.employee', 'Courier', ondelete='restrict', required=True)
+    vehicle_id = fields.Many2one('fleet.vehicle', 'Vehicle', ondelete='restrict', required=True)
     departure_date = fields.Datetime('Departure Date')
     finished_date = fields.Datetime('Finished Date')
     state = fields.Selection([
@@ -79,27 +79,54 @@ class pickup_delivery_trip(models.Model):
     ], 'State', required=True, default='draft')
     trip_line_ids = fields.One2many('pickup.delivery.trip.line', 'trip_id', 'Trip Lines', required=True)
 
-    @api.one
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.trip.sequence')
+        return super(pickup_delivery_trip, self).create(vals);
+
+    @api.multi
     def action_ready(self):
         self.write({
             'state': 'ready'
         })
 
-    @api.one
+    @api.multi
     def action_on_the_way(self):
         self.write({
             'state': 'on_the_way',
-            'departure_time': fields.Date.context_today(self),
+            'departure_date': fields.Date.context_today(self),
         })
 
-    @api.one
+    @api.multi
     def action_finished(self):
-        self.write({
-            'state': 'finished',
-            'finished_time': fields.Date.context_today(self),
+        for data in self:
+            for record in data.trip_line_ids:
+                if record.execute_status:
+                    print 'asd'
+                    if record.execute_status == 'execute':
+                        record.request_id.write({
+                            'state':'executed'
+                        })
+                    else:
+                        record.request_id.write({
+                            'state':'delayed'
+                        })
+            data.write({
+                'state': 'finished',
+                'finished_date': fields.Date.context_today(self),
+            })
+        courier_fee = self.env['courier.fee.log']
+        total_fee = courier_fee.calculate_fee(self)
+        courier_fee.create({
+            'courier_id': self.courier_id.id,
+            'trip_id': self.id,
+            'state': 'draft' ,
+            'fee_type': self.courier_id.fee_setting_id.fee_type,
+            'total_fee': total_fee,
         })
-
-    @api.one
+ 
+       
+    @api.multi
     def action_cancelled(self):
         self.write({
             'state': 'cancelled'
@@ -112,8 +139,8 @@ class pickup_delivery_trip_line(models.Model):
     _description = "Pickup and Delivery Trip Line"
 
     trip_id = fields.Many2one('pickup.delivery.trip', 'Trip', ondelete='cascade')
-    request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain=[('state', '=', 'ready'), ('state', '=', 'delayed')])
-    request_desc = fields.Text('Description')
+    request_id = fields.Many2one('pickup.delivery.request', 'Request', ondelete='cascade', domain="[('state', 'in', ['requested','delayed'])]")
+    request_desc = fields.Text('Description', compute="_compute_desc")
     address = fields.Text('Address', compute="_compute_address")
     delivery_type = fields.Selection([
         ('employee', 'Employee'),
@@ -133,6 +160,14 @@ class pickup_delivery_trip_line(models.Model):
         request_id_env = self.env['pickup.delivery.request']
         for record in self:
             record.address = request_id_env.browse(record.request_id.id).address
+
+    @api.multi
+    @api.depends('request_id')
+    def _compute_desc(self):
+        request_id_env = self.env['pickup.delivery.request']
+        res_partner_env = self.env['res.partner']
+        for record in self:
+            record.request_desc = "%s\n"%(request_id_env.browse(record.request_id.id).name)
 
 
 # ==========================================================================================================================
