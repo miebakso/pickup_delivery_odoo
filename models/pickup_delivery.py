@@ -99,9 +99,9 @@ class pickup_delivery_trip(models.Model):
     @api.multi
     def action_finished(self):
         for data in self:
-            for record in data.trip_line.ids:
-                if record.executes_status == True:
-                    if record.executes_status == 'execute':
+            for record in data.trip_line_ids:
+                if record.execute_status == True:
+                    if record.execute_status == 'execute':
                         record.request_id.write({
                             'state':'excecuted'
                         })
