@@ -1,0 +1,63 @@
+<openerp>
+    <data>
+        <template id="report_attendance_list_document_template">
+            <div class="page">
+                <t t-call="training_center.report_attendance_list_style" />
+                <h1>
+                    <span t-field="o.course_id" />
+                </h1>
+                <span>Dimulai tanggal: 
+                    <span t-field="o.open_date" /></span>
+                <br />
+                <span>Jumlah sesi: 
+                    <span t-field="o.total_sessions" /></span>
+                <br />
+                <span>Diajar oleh: 
+                    <span t-field="o.trainer_id" /></span>
+                <br />
+                <br />
+                <t t-set="session_max" t-value="15" />
+                <table class="attendance_list">
+                    <tr>
+                        <th style="width:25%">Nama Peserta</th>
+                        <t t-foreach="range(1,session_max+1)" t-as="session_nth">
+                            <th style="width:5%">
+                                <t t-esc="session_nth" />
+                            </th>
+                        </t>
+                    </tr>
+                    <t t-foreach="o.participant_ids" t-as="participant">
+                        <tr>
+                            <td>
+                                <span t-field="participant.participant_id" />
+                            </td>
+                            <t t-foreach="range(1,session_max+1)" t-as="session_nth">
+                                <td></td>
+                            </t>
+                        </tr>
+                    </t>
+                </table>
+            </div>
+        </template>
+        <template id="report_attendance_list_template">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="training_center.report_attendance_list_document_template" /></t>
+            </t>
+        </template>
+        <template id="report_attendance_list_style">
+            <style type="text/css">
+				table.attendance_list {
+					width: 100%;
+				}
+				table.attendance_list td, table.attendance_list th {
+					border: 1px solid #000;
+					padding: 3px 8px;
+				}
+				table.attendance_list th {
+					text-align: center;
+				}
+			</style>
+        </template>
+    </data>
+</openerp>

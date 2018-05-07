@@ -83,31 +83,30 @@ class pickup_delivery_trip(models.Model):
         vals['name'] = self.env['ir.sequence'].next_by_code('pickup.delivery.trip.sequence')
         return super(pickup_delivery_trip, self).create(vals);
 
-    @api.one
+    @api.multi
     def action_ready(self):
         self.write({
             'state': 'ready'
         })
 
-    @api.one
+    @api.multi
     def action_on_the_way(self):
         self.write({
             'state': 'on_the_way',
             'departure_date': fields.Date.context_today(self),
         })
 
-    @api.one
+    @api.multi
     def action_finished(self):
-        trip_line_ids_env = self.env['pickup.delivery.trip.line']
-        if(trip_line_ids_env != False):
-            for record in trip_line_ids_env:
-                if(record.executes_status == True):
-                    if(record.executes_status == 'execute'):
-                        record.browse(trip_line_ids_env.request_id).write({
-                            'state':'excecuted'
+        for data in self:
+            for record in data.trip_line_ids:
+                if record.execute_status == True:
+                    if record.execute_status == 'execute':
+                        record.request_id.write({
+                            'state':'executed'
                         })
                     else:
-                        record.browse(trip_line_ids_env.request_id).write({
+                        record.request_id.write({
                             'state':'delayed'
                         })
             self.write({
@@ -115,7 +114,7 @@ class pickup_delivery_trip(models.Model):
                 'finished_date': fields.Date.context_today(self),
             })
         
-    @api.one
+    @api.multi
     def action_cancelled(self):
         self.write({
             'state': 'cancelled'
@@ -154,7 +153,7 @@ class pickup_delivery_trip_line(models.Model):
     @api.depends('request_id')
     def _compute_desc(self):
         request_id_env = self.env['pickup.delivery.request']
-        res_partner_env = self.env['res.partner'];
+        res_partner_env = self.env['res.partner']
         for record in self:
             record.request_desc = "%s\n"%(request_id_env.browse(record.request_id.id).name)
 
