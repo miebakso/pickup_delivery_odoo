@@ -164,10 +164,13 @@ class pickup_delivery_trip_line(models.Model):
     @api.multi
     @api.depends('request_id')
     def _compute_desc(self):
-        request_id_env = self.env['pickup.delivery.request']
-        res_partner_env = self.env['res.partner']
         for record in self:
-            record.request_desc = "%s\n"%(request_id_env.browse(record.request_id.id).name)
+            tempNamaProduk = ""
+            counter = 1
+            for product in record.request_id.line_ids:
+                tempNamaProduk = "%s %s. %s x %s pcs\n"%(tempNamaProduk,str(counter),product.product_id.name,str(product.qty))
+                counter = counter + 1
+            record.request_desc = "Nama Partner : %s\n Produk :\n %s "%(record.request_id.partner_id.name,tempNamaProduk)
 
 
 # ==========================================================================================================================
