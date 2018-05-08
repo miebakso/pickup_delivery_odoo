@@ -168,7 +168,7 @@ class pickup_delivery_trip_line(models.Model):
             tempNamaProduk = ""
             counter = 1
             for product in record.request_id.line_ids:
-                tempNamaProduk = tempNamaProduk +str(counter) +". "+ product.product_id.name + " x " +str(product.qty)+" pcs \n"
+                tempNamaProduk = "%s %s. %s x %s pcs\n"%(tempNamaProduk,str(counter),product.product_id.name,str(product.qty))
                 counter = counter + 1
             record.request_desc = "Nama Partner : %s\n Produk :\n %s "%(record.request_id.partner_id.name,tempNamaProduk)
 
