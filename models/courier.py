@@ -73,18 +73,18 @@ class courier_fee_log(models.Model):
 			'state': 'approved',
 		})
 
-	@api.multi
-	def action_approve_all(self):
-		context = dict(self._context or {})
-		invoices = (context.get('active_ids'))
-		_logger.debug(invoices)
-		for record in invoices:
-			# _logger.debug(record)
-			fee_log = self.browse(record)
-			fee_log.write({'state' : 'approved'})
+	# @api.multi
+	# def action_approve_all(self):
+	# 	context = dict(self._context or {})
+	# 	invoices = (context.get('active_ids'))
+	# 	_logger.debug(invoices)
+	# 	for record in invoices:
+	# 		# _logger.debug(record)
+	# 		fee_log = self.browse(record)
+	# 		fee_log.write({'state' : 'approved'})
 
-		test2 = self.env['courier.fee.log'].search([])
-		_logger.debug(len(test2))
+	# 	test2 = self.env['courier.fee.log'].search([])
+	# 	_logger.debug(len(test2))
 		
 
 	@api.one
@@ -122,6 +122,22 @@ class courier_fee_log(models.Model):
 		
 		return fee_total
 
+# ==========================================================================================================================
+class confirm_fee_log(models.Model):
+	_name = "confirm.fee.log"
+	
+	@api.multi
+	def action_approve_all(self):
+		context = dict(self._context or {})
+		invoices = (context.get('active_ids'))
+		_logger.debug(invoices)
+		for record in invoices:
+			# _logger.debug(record)
+			fee_log = self.browse(record)
+			fee_log.write({'state' : 'approved'})
+
+		test2 = self.env['courier.fee.log'].search([])
+		_logger.debug(len(test2))
 # ==========================================================================================================================
 
 class courier_fee_log_report(models.TransientModel):
@@ -163,12 +179,13 @@ class courier_fee_log_report(models.TransientModel):
 		ws1.write(row, col+1, "To :", sub_header_style)
 		ws1.write(row, col+2, datetime.strftime(datetime.strptime(self.date_to,DEFAULT_SERVER_DATE_FORMAT),"%d/%m/%Y"), sub_header_content_style)
 		row += 1
-		ws1.write(row,col+1,"Courier",sub_header_style)
-		ws1.write(row,col+2,"Number of Trip",sub_header_style)
-		ws1.write(row,col+3,"Total Fee",sub_header_style)
-		ws1.write(row,col+4,"Paid",sub_header_style)
+		col += 1
+		ws1.write(row,col,"Courier",sub_header_style)
+		ws1.write(row+1,col,"Number of Trip",sub_header_style)
+		ws1.write(row+2,col,"Total Fee",sub_header_style)
+		ws1.write(row+3,col,"Paid",sub_header_style)
 
-		row += 1
+		col += 1
 		#Searching for customer invoices
 		fee_logs = self.env['courier.fee.log'].search([('courier_id','=',self.courier_id.id),('state','!=','rejected')])
 		all_inv_total = 0
@@ -182,10 +199,10 @@ class courier_fee_log_report(models.TransientModel):
 				paid +=  record.total_fee
 
 
-		ws1.write(row,col+1,self.courier_id.name,line_content_style)
-		ws1.write(row,col+2,no_trip,line_content_style)
-		ws1.write(row,col+3,total_fee,line_content_style)
-		ws1.write(row,col+4,paid,line_content_style)
+		ws1.write(row,col,self.courier_id.name,line_content_style)
+		ws1.write(row+1,col,no_trip,line_content_style)
+		ws1.write(row+2,col,total_fee,line_content_style)
+		ws1.write(row+3,col,paid,line_content_style)
 	
 		wb1.save(fp)
 		out = base64.encodestring(fp.getvalue())
