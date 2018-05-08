@@ -117,13 +117,15 @@ class pickup_delivery_trip(models.Model):
             })
         courier_fee = self.env['courier.fee.log']
         total_fee = courier_fee.calculate_fee(self)
-        courier_fee.create({
-            'courier_id': self.courier_id.id,
-            'trip_id': self.id,
-            'state': 'draft' ,
-            'fee_type': self.courier_id.fee_setting_id.fee_type,
-            'total_fee': total_fee,
-        })
+        if(self.courier_id.fee_setting_id.fee_type):
+            courier_fee.create({
+                'courier_id': self.courier_id.id,
+                'trip_id': self.id,
+                'state': 'draft' ,
+                'fee_type': self.courier_id.fee_setting_id.fee_type,
+                'total_fee': total_fee,
+            })
+        
  
        
     @api.multi

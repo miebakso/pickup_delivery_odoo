@@ -156,6 +156,7 @@
 
 		<!-- Fee Log Report =============================================================================================================== -->
 
+
 		<record id="corier_fee_report_form" model="ir.ui.view">
 			<field name="name">courier.fee.log.report.form</field>
 			<field name="model">courier.fee.log.report</field>

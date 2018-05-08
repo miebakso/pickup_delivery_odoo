@@ -129,15 +129,15 @@ class confirm_fee_log(models.Model):
 	@api.multi
 	def action_approve_all(self):
 		context = dict(self._context or {})
-		invoices = (context.get('active_ids'))
+		invoices = self.env['courier.fee.log'].browse(context.get('active_ids'))
 		_logger.debug(invoices)
 		for record in invoices:
 			# _logger.debug(record)
-			fee_log = self.browse(record)
-			fee_log.write({'state' : 'approved'})
+			record.write({'state' : 'approved'})
 
 		test2 = self.env['courier.fee.log'].search([])
 		_logger.debug(len(test2))
+
 # ==========================================================================================================================
 
 class courier_fee_log_report(models.TransientModel):
@@ -187,7 +187,7 @@ class courier_fee_log_report(models.TransientModel):
 
 		col += 1
 		#Searching for customer invoices
-		fee_logs = self.env['courier.fee.log'].search([('courier_id','=',self.courier_id.id),('state','!=','rejected')])
+		fee_logs = self.env['courier.fee.log'].search([('courier_id','=',self.courier_id.id),('state','!=','rejected'),('create_date','>=',self.date_from),('create_date','<=',self.date_to)])
 		all_inv_total = 0
 		total_fee=0
 		no_trip =0
@@ -218,11 +218,3 @@ class courier_fee_log_report(models.TransientModel):
 		}
 # ==========================================================================================================================
 
-
-# class ClassABCD(ReportXlsx):
-
-# 	def generate_xlsx_report(self, workbook, data, lines):
-# 		current_date = strftime("%Y-%m-%d", gmtime())
-# 		logged_users = self.env['res.users'].search([('id', '=', data['create_uid'][0])])
-# 		sheet = workbook.add_worksheet()
-# 		# add the rest of the report code here
