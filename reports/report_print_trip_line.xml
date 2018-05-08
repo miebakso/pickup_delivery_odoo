@@ -13,21 +13,54 @@
 
 		<template id="report_print_trip_line_document_template">
 			<div class="page">
-				<!-- PENGATURAN TEMPLATE -->
-					
-					<span t-field="trip.request_id.name" />
-					<span t-field="trip.address" />
-					<h2>====================</h2>
-				<!--<span t-field="trip.address" />
-					<span t-field="trip.delivery_type" />
-					<span t-field="trip.expedition_id.name" />
-					<span t-field="trip.notes" />
-					<span t-field="trip.execute_status" />
-					<span t-field="trip.partner_pic" />
-				-->
-				
+				<!-- PENJEMPUTAN -->
+				<h2>TANDA TERIMA</h2>
+					<p>Telah terima dari ______________________________, material untuk pembuatan gigi palsu.</p>
+					<p>Dengan detail sebagai berikut.</p>
+					<span t-field="trip.request_desc"/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<p>PENERIMA</p>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
+					<p>________________________</p>
 			</div>
 		</template>
+
+		<!-- <template id="report_print_trip_line_document_template">
+			<div class="page"> -->
+				<!-- PENGIRIMAN -->
+				<!-- <h2>TANDA TERIMA</h2>
+				<p>Telah terima dari Cipta d.Lab, produk jadi dengan detail sebagai berikut.</p>
+				<span t-field="trip.request_desc"/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<p>PENERIMA</p>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+				<p>________________________</p>
+			</div>
+		</template> -->
 
 	</data>
 </openerp>
