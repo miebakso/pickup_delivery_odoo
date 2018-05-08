@@ -5,13 +5,18 @@
 			<t t-foreach="docs" t-as="o">
 				<t t-foreach="o.trip_line_ids" t-as="trip">
 					<t t-call="report.html_container">
-						<t t-call="pickup_delivery.report_print_trip_line_document_template" />
+						<t t-if="trip.request_id.request_type == 'pickup'">
+							<t t-call="pickup_delivery.report_print_trip_line_pickup_document_template" />
+						</t>
+						<t t-if="trip.request_id.request_type == 'delivery'">
+							<t t-call="pickup_delivery.report_print_trip_line_delivery_document_template" />
+						</t>
 					</t>
 				</t>
 			</t>
 		</template>
 
-		<template id="report_print_trip_line_document_template">
+		<template id="report_print_trip_line_pickup_document_template">
 			<div class="page">
 				<!-- PENJEMPUTAN -->
 				<h2>TANDA TERIMA</h2>
@@ -37,10 +42,10 @@
 			</div>
 		</template>
 
-		<!-- <template id="report_print_trip_line_document_template">
-			<div class="page"> -->
+		<template id="report_print_trip_line_delivery_document_template">
+			<div class="page">
 				<!-- PENGIRIMAN -->
-				<!-- <h2>TANDA TERIMA</h2>
+				<h2>TANDA TERIMA</h2>
 				<p>Telah terima dari Cipta d.Lab, produk jadi dengan detail sebagai berikut.</p>
 				<span t-field="trip.request_desc"/>
 				<br/>
@@ -60,7 +65,7 @@
 				<br/>
 				<p>________________________</p>
 			</div>
-		</template> -->
+		</template>
 
 	</data>
 </openerp>
