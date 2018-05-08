@@ -10,10 +10,6 @@
 			<field name="model">courier.fee.setting</field>
 			<field name="arch" type="xml">
 				<form >
-					<header>
-						<!-- <button string="Use Voucher" type="object" name="action_use_voucher" class="oe_highlight" attrs="{'invisible': [('state','!=','generated')]}" confirm="Are you sure to use this voucher?" />
-						<field name="state" readonly="1" widget="statusbar" /> -->
-					</header>
 					<group>
 						<field name="name" />
 						<field name="fee_type" />
@@ -109,41 +105,6 @@
 				</tree>
 			</field>
 		</record>
-	<!-- 	
-		<record id="approve_all_view" model="ir.ui.view">
-			<field name="name">approve.all.view</field>
-			<field name="model">courier.fee.log</field>
-			<field name="arch" type="xml">
-				<form string="Apprval Form">
-					<label string="All selected vendor bill will be approved. Are you sure?" />
-					<footer>
-						<button string="Approve all" name="action_approve_all" type="object" class="btn-primary" default_focus="1" />
-						<button string="Cancel" class="btn-default" special="cancel" />
-					</footer>
-				</form>
-			</field>
-		</record>
-		
-		<act_window id="approve_all" 
-				name="Approve All"
-				res_model="courier.fee.log"
-				view_type="form"
-				view_mode="form"
-				view_id="approve_all_view"
-				key2="client_action_multi"
-				target="new"
-			/>
-		
-		<record model="ir.values" id="action_testing">
-			<field name="name">Reverse Moves</field>
-			<field name="key2">client_action_multi</field>
-			<field name="value" eval="'ir.actions.act_window,' +str(ref('approve_all'))" />
-			<field name="key">action</field>
-			<field name="model">courier.fee.log</field>
-		</record>
- -->
-		
-
 
 		<record id="courier_action_fee_log" model="ir.actions.act_window">
 			<field name="name">Courier Fee Log</field>

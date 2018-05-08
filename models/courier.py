@@ -142,7 +142,6 @@ class confirm_fee_log(models.Model):
 
 class courier_fee_log_report(models.TransientModel):
 	_name =  "courier.fee.log.report"
-	_inherit = "chjs.dated.setting"
 	_description = "Setting fee untuk courier"
 
 	name = fields.Char('Name')
@@ -217,4 +216,3 @@ class courier_fee_log_report(models.TransientModel):
 			'target': 'new',
 		}
 # ==========================================================================================================================
-
