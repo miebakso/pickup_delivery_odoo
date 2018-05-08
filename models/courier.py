@@ -73,18 +73,18 @@ class courier_fee_log(models.Model):
 			'state': 'approved',
 		})
 
-	@api.multi
-	def action_approve_all(self):
-		context = dict(self._context or {})
-		invoices = (context.get('active_ids'))
-		_logger.debug(invoices)
-		for record in invoices:
-			# _logger.debug(record)
-			fee_log = self.browse(record)
-			fee_log.write({'state' : 'approved'})
+	# @api.multi
+	# def action_approve_all(self):
+	# 	context = dict(self._context or {})
+	# 	invoices = (context.get('active_ids'))
+	# 	_logger.debug(invoices)
+	# 	for record in invoices:
+	# 		# _logger.debug(record)
+	# 		fee_log = self.browse(record)
+	# 		fee_log.write({'state' : 'approved'})
 
-		test2 = self.env['courier.fee.log'].search([])
-		_logger.debug(len(test2))
+	# 	test2 = self.env['courier.fee.log'].search([])
+	# 	_logger.debug(len(test2))
 		
 
 	@api.one
@@ -122,6 +122,22 @@ class courier_fee_log(models.Model):
 		
 		return fee_total
 
+# ==========================================================================================================================
+class confirm_fee_log(models.Model):
+	_name = "confirm.fee.log"
+	
+	@api.multi
+	def action_approve_all(self):
+		context = dict(self._context or {})
+		invoices = (context.get('active_ids'))
+		_logger.debug(invoices)
+		for record in invoices:
+			# _logger.debug(record)
+			fee_log = self.browse(record)
+			fee_log.write({'state' : 'approved'})
+
+		test2 = self.env['courier.fee.log'].search([])
+		_logger.debug(len(test2))
 # ==========================================================================================================================
 
 class courier_fee_log_report(models.TransientModel):
@@ -163,6 +179,7 @@ class courier_fee_log_report(models.TransientModel):
 		ws1.write(row, col+1, "To :", sub_header_style)
 		ws1.write(row, col+2, datetime.strftime(datetime.strptime(self.date_to,DEFAULT_SERVER_DATE_FORMAT),"%d/%m/%Y"), sub_header_content_style)
 		row += 1
+		col += 1
 		ws1.write(row,col,"Courier",sub_header_style)
 		ws1.write(row+1,col,"Number of Trip",sub_header_style)
 		ws1.write(row+2,col,"Total Fee",sub_header_style)
