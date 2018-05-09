@@ -15,9 +15,7 @@
 						<field name="fee_type" />
 						<field name="trip_fee" attrs="{'invisible': [('fee_type','=','per_address')]}" />
 						<field name="address_fee" attrs="{'invisible': [('fee_type','=','per_trip')]}" />
-						<field name="delivered_bonus" attrs="{'invisible': [('fee_type','=','per_trip')]}"/>
-						<field name="valid_from" />
-						<field name="valid_through" />
+						<field name="delivered_bonus" />
 					</group>
 				</form>
 			</field>
@@ -33,13 +31,11 @@
 					<field name="trip_fee" attrs="{'invisible': [('fee_type','=','per_address')]}" />
 					<field name="address_fee" attrs="{'invisible': [('fee_type','=','per_trip')]}" />
 					<field name="delivered_bonus" />
-					<field name="valid_from" />
-					<field name="valid_through" />
 				</tree>
 			</field>
 		</record>
 
-		
+
 
 		<record id="courier_action_fee_setting" model="ir.actions.act_window">
 			<field name="name">Courier Fee Setting</field>
@@ -51,7 +47,7 @@
 		<menuitem sequence="1" id="courier_menu_fee_setting" parent="fee_setting" action="courier_action_fee_setting" />
 
 		<!-- Courier  =============================================================================================================== -->
-		
+
 		<record model="ir.ui.view" id="courier_form">
 			<field name="name">hr.employee.form</field>
 			<field name="model">hr.employee</field>
@@ -71,7 +67,7 @@
 
 
 		<!-- Log =============================================================================================================== -->
-		
+
 
 		<record id="courier_fee_Log_form" model="ir.ui.view">
 			<field name="name">courier.fee.log.form</field>
@@ -156,7 +152,7 @@
 			</field>
 		</record>
 
-		
+
 
 		<record id="courier_action_fee_log_setting" model="ir.actions.act_window">
 			<field name="name">Courier Fee Log Report</field>
@@ -169,7 +165,7 @@
 
 
 		<!-- Fee Log Report =============================================================================================================== -->
-		
+
 		<record id="approve_all_view" model="ir.ui.view">
             <field name="name">confirm.fee.log.form</field>
             <field name="model">confirm.fee.log</field>

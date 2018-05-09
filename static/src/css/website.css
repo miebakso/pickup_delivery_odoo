@@ -1,0 +1,20 @@
+.mt-1 {
+	margin-top: 10px;
+}
+
+.pickup-list,
+.delivery-list {
+	margin: 12px 15px;
+}
+
+.panel .table {
+	margin-bottom: 0;
+}
+
+.line-panel .row {
+	margin-bottom: 1em;
+}
+
+.line-panel .row:last-child {
+	margin-bottom: 0;
+}

@@ -1,0 +1,284 @@
+<openerp>
+	<data>
+
+<!-- MENU ================================================================================================================== -->
+
+		<record id="menu_pickups" model="website.menu">
+			<field name="name">Pickups</field>
+			<field name="url">/pickups</field>
+			<field name="parent_id" ref="website.main_menu"/>
+			<field name="sequence" type="int">51</field>
+		</record>
+
+		<record id="menu_deliveries" model="website.menu">
+			<field name="name">Deliveries</field>
+			<field name="url">/deliveries</field>
+			<field name="parent_id" ref="website.main_menu"/>
+			<field name="sequence" type="int">51</field>
+		</record>
+
+<!-- IMPORTS =============================================================================================================== -->
+
+		<template id="pickup_delivery_style" name="Pickup and Delivery Website Style" inherit_id="website.theme">
+			<xpath expr="//link[last()]" position="after">
+				<link type="text/css" href="/pickup_delivery/static/src/css/website.css" rel="stylesheet" ></link>
+				<link type="text/css" href="/pickup_delivery/static/src/css/bootstrap-datetimepicker.min.css" rel="stylesheet" ></link>
+				<script type="text/javascript" src="/pickup_delivery/static/src/js/website.js"></script>
+				<script type="text/javascript" src="/pickup_delivery/static/src/js/moment.js"></script>
+				<script type="text/javascript" src="/pickup_delivery/static/src/js/bootstrap-datetimepicker.min.js"></script>
+			</xpath>
+		</template>
+
+<!-- PICKUP ================================================================================================================ -->
+
+		<template id="pickup_index">
+			<t t-call="website.layout">
+				<div id="wrap" class="wrap_bg">
+					<div class="container">
+						<div class="row mt-1">
+							<div class="col-md-12 text-right">
+								<a href="/pickups/request" class="btn btn-primary">Request for Pickup</a>
+							</div>
+						</div>
+
+						<t t-call="pickup_delivery.pickup_navs"></t>
+						<t t-call="pickup_delivery.pickup_list"></t>
+					</div>
+				</div>
+			</t>
+		</template>
+
+		<template id="pickup_navs">
+			<div class="row mt-1">
+				<div class="col-md-12">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="javascript:void(0)" class="btn pickup_tab" data-toggle="tab" data-state="requested">Requested</a></li>
+						<li><a href="javascript:void(0)" class="btn pickup_tab" data-toggle="tab" data-state="ready">Ready</a></li>
+						<li><a href="javascript:void(0)" class="btn pickup_tab" data-toggle="tab" data-state="on_the_way">On the Way</a></li>
+						<li><a href="javascript:void(0)" class="btn pickup_tab" data-toggle="tab" data-state="history">History</a></li>
+					</ul>
+				</div>
+			</div>
+		</template>
+
+		<template id="pickup_list">
+			<div class="row pickup-list">
+				<div class="col-md-12">
+					<div id="pickup_content"></div>
+				</div>
+			</div>
+		</template>
+
+		<template id="pickup_list_inner">
+			<t t-if="len(pickups) > 0">
+				<t t-foreach="pickups" t-as="pickup">
+					<t t-call="pickup_delivery.pickup_item" />
+				</t>
+			</t>
+		</template>
+
+		<template id="pickup_item">
+			<div class="panel panel-primary">
+				<div class="panel-heading"><t t-esc="pickup.name" /></div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-3">Address</div>
+						<div class="col-md-9"><t t-esc="pickup.address" /></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">Request Date</div>
+						<div class="col-md-9"><t t-esc="pickup.request_date" /></div>
+					</div>
+					<t t-if="pickup.state">
+						<div class="row">
+							<div class="col-md-3">State</div>
+							<div class="col-md-9"><t t-esc="dict(pickup.fields_get(allfields=['state'])['state']['selection'])[pickup.state]"/></div>
+						</div>
+					</t>
+					<t t-if="pickup.executed_date">
+						<div class="row">
+							<div class="col-md-3">Executed Date</div>
+							<div class="col-md-9"><t t-esc="pickup.executed_date" /></div>
+						</div>
+					</t>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Product Name</th>
+								<th>Quantity</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<t t-foreach="pickup.line_ids" t-as="line">
+								<tr>
+									<t t-call="pickup_delivery.pickup_line_item" />
+								</tr>
+							</t>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</template>
+
+		<template id="pickup_line_item">
+			<td><t t-esc="line.product_id.name" /></td>
+			<td><t t-esc="line.qty" /></td>
+			<td><t t-esc="line.notes" /></td>
+		</template>
+
+<!-- REQUEST PICKUP ======================================================================================================== -->
+
+		<template id="pickup_request_index">
+			<t t-call="website.layout">
+				<div id="wrap" class="wrap-bg">
+					<div class="container">
+						<form action="/pickups/request/submit" method="post">
+							<div class="panel panel-primary mt-1 line-panel">
+								<div class="panel-heading">Request for Pickup</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-12 text-right">
+											<button class="btn btn-primary">SUBMIT PICKUP REQUEST</button>
+											<button type="button" class="btn btn-success add-line">ADD LINE</button>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Request Date</label>
+												<input type="text" class="form-control datepicker" name="request_date" placeholder="Request Date" required="True" />
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 lines">
+											<t t-call="pickup_delivery.pickup_request_line" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</t>
+		</template>
+
+		<template id="pickup_request_line">
+			<div class="form-group">
+				<div class="row">
+					<div class="col-md-4">
+						<select name="product_id[]" class="form-control" required="True" >
+							<option value="">Choose Product</option>
+							<t t-foreach="products" t-as="product">
+								<option t-att-value="product.id" t-esc="product.name"></option>
+							</t>
+						</select>
+					</div>
+					<div class="col-md-3">
+						<input type="number" min="1" name="qty[]" placeholder="Quantity" class="form-control" value="1" required="True" />
+					</div>
+					<div class="col-md-4">
+						<textarea name="notes[]" class="form-control" placeholder="Notes"></textarea>
+					</div>
+					<div class="col-md-1">
+						<button type="button" class="btn btn-danger delete-line">DEL</button>
+					</div>
+				</div>
+			</div>
+		</template>
+
+<!-- DELIVERY ============================================================================================================== -->
+
+		<template id="delivery_index">
+			<t t-call="website.layout">
+				<div id="wrap" class="wrap_bg">
+					<div class="container">
+						<t t-call="pickup_delivery.delivery_navs"></t>
+						<t t-call="pickup_delivery.delivery_list"></t>
+					</div>
+				</div>
+			</t>
+		</template>
+
+		<template id="delivery_navs">
+			<div class="row mt-1">
+				<div class="col-md-12">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="javascript:void(0)" class="btn delivery_tab" data-toggle="tab" data-state="requested">Requested</a></li>
+						<li><a href="javascript:void(0)" class="btn delivery_tab" data-toggle="tab" data-state="ready">Ready</a></li>
+						<li><a href="javascript:void(0)" class="btn delivery_tab" data-toggle="tab" data-state="on_the_way">On the Way</a></li>
+						<li><a href="javascript:void(0)" class="btn delivery_tab" data-toggle="tab" data-state="history">History</a></li>
+					</ul>
+				</div>
+			</div>
+		</template>
+
+		<template id="delivery_list">
+			<div class="row delivery-list">
+				<div class="col-md-12">
+					<div id="delivery_content"></div>
+				</div>
+			</div>
+		</template>
+
+		<template id="delivery_list_inner">
+			<t t-if="len(deliveries) > 0">
+				<t t-foreach="deliveries" t-as="delivery">
+					<t t-call="pickup_delivery.delivery_item" />
+				</t>
+			</t>
+		</template>
+
+		<template id="delivery_item">
+			<div class="panel panel-primary">
+				<div class="panel-heading"><t t-esc="delivery.name" /></div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-3">Address</div>
+						<div class="col-md-9"><t t-esc="delivery.address" /></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3">Request Date</div>
+						<div class="col-md-9"><t t-esc="delivery.request_date" /></div>
+					</div>
+					<t t-if="delivery.state">
+						<div class="row">
+							<div class="col-md-3">State</div>
+							<div class="col-md-9"><t t-esc="dict(delivery.fields_get(allfields=['state'])['state']['selection'])[delivery.state]"/></div>
+						</div>
+					</t>
+					<t t-if="delivery.executed_date">
+						<div class="row">
+							<div class="col-md-3">Executed Date</div>
+							<div class="col-md-9"><t t-esc="delivery.executed_date" /></div>
+						</div>
+					</t>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Product Name</th>
+								<th>Quantity</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<t t-foreach="delivery.line_ids" t-as="line">
+								<tr>
+									<t t-call="pickup_delivery.delivery_line_item" />
+								</tr>
+							</t>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</template>
+
+		<template id="delivery_line_item">
+			<td><t t-esc="line.product_id.name" /></td>
+			<td><t t-esc="line.qty" /></td>
+			<td><t t-esc="line.notes" /></td>
+		</template>
+
+	</data>
+</openerp>

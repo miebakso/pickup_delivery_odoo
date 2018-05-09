@@ -64,19 +64,19 @@ class courier_fee_log(models.Model):
 	def _compute_name(self):
 		for record in self:
 			record.name =  str(record.fee_type) + ' fee for trip ' + record.create_date
-	
+
 
 	@api.one
 	def action_approve(self):
 		self.write({
 			'state': 'approved',
-		})		
+		})
 
 	@api.one
 	def action_paid(self):
 		self.write({
 			'state': 'paid',
-		})	
+		})
 
 	@api.one
 	def action_reject(self):
@@ -88,7 +88,7 @@ class courier_fee_log(models.Model):
 		obj_chjs = self.env['courier.fee.setting']
 		curr_date =  datetime.today().strftime(DEFAULT_SERVER_DATE_FORMAT)
 		get_setting = obj_chjs.get_current(curr_date,domain=[('fee_type','=',trip.courier_id.fee_setting_id.fee_type)])
-		fee_total = 0	
+		fee_total = 0
 		if get_setting != trip.courier_id.fee_setting_id:
 			raise ValidationError('This is not latest setting')
 		if(trip.courier_id.fee_setting_id):
@@ -108,13 +108,13 @@ class courier_fee_log(models.Model):
 			})
 		else:
 			raise ValidationError("Courier doesn't have fee_setting_id")
-		
+
 		return fee_total
 
 # ==========================================================================================================================
 class confirm_fee_log(models.Model):
 	_name = "confirm.fee.log"
-	
+
 	@api.multi
 	def action_approve_all(self):
 		context = dict(self._context or {})
@@ -140,7 +140,7 @@ class courier_fee_log_report(models.TransientModel):
 	courier_id = fields.Many2one('hr.employee','Courier ID' , domain=[('fee_setting_id' ,'!=',False)])
 	report = fields.Binary('Prepared file', filters='.xls', readonly=True)
 
-	
+
 	@api.multi
 	def generate_xls_report(self):
 		self.ensure_one()
@@ -191,7 +191,7 @@ class courier_fee_log_report(models.TransientModel):
 		ws1.write(row+1,col,no_trip,line_content_style)
 		ws1.write(row+2,col,total_fee,line_content_style)
 		ws1.write(row+3,col,paid,line_content_style)
-	
+
 		wb1.save(fp)
 		out = base64.encodestring(fp.getvalue())
 		self.write({'report': out, 'file_name':str(self.courier_id.name)+"'s report "+str(self.date_from)+' to '+str(self.date_to)+'.xls'})

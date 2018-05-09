@@ -31,7 +31,7 @@
 					</field>
 				</form>
 			</field>
-		</record>	
+		</record>
 
 		<record model="ir.ui.view" id="pickup_delivery_request_pickup_tree">
 			<field name="name">pickup.delivery.request.pickup.tree</field>
@@ -88,7 +88,7 @@
 					</group>
 				</form>
 			</field>
-		</record>	
+		</record>
 
 
 		<record model="ir.ui.view" id="pickup_delivery_request_line_tree">

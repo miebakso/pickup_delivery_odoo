@@ -1,25 +1,24 @@
 {
-	'name': 'Pickup Delivery',
+	'name': 'Pickup and Delivery',
 	'version': '1.0',
-	'author': 'Christyan Juniady and Associates',
-	'maintainer': 'Christyan Juniady and Associates',
+	'author': '',
+	'maintainer': '',
 	'category': 'General',
 	'sequence': 21,
-	'website': 'http://www.chjs.biz',
+	'website': '',
 	'summary': '',
-	'description': """
-		
-	""",
-	'author': 'Christyan Juniady and Associates',
+	'description': """""",
+	'author': '',
 	'images': [
 	],
-	'depends': ['base','web','account','chjs_dated_setting','hr','mail','fleet'],	
+	'depends': ['base','web','website','account','chjs_dated_setting','hr','fleet'],
 	'data': [
 		'views/pickup_delivery_view.xml',
 		'views/courier.xml',
 		'views/sequence.xml',
+		'views/qweb.xml',
 		'reports/pickup_delivery.xml',
-		'reports/report_print_trip_line.xml',
+		'reports/report_print_trip_line.xml'
 	],
 	'demo': [
 	],
