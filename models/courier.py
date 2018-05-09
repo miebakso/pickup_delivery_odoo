@@ -18,7 +18,6 @@ class courier_fee_setting(models.Model):
 	_inherit = "chjs.dated.setting"
 	_description = "Setting fee untuk courier"
 
-	name = fields.Char('Nama Setting')
 	fee_type = fields.Selection((
 		('per_trip','per trip'),
 		('per_address','per address')
@@ -54,7 +53,7 @@ class courier_fee_log(models.Model):
 			('approved','Approved'),
 			('paid','Paid'),
 			('rejected','Rejected')
-		),'State', default="draft")
+		),'State', default="draft", track_visibility="onchange")
 	fee_type = fields.Selection((
 		('per_trip','per trip'),
 		('per_address','per address')
@@ -71,21 +70,7 @@ class courier_fee_log(models.Model):
 	def action_approve(self):
 		self.write({
 			'state': 'approved',
-		})
-
-	# @api.multi
-	# def action_approve_all(self):
-	# 	context = dict(self._context or {})
-	# 	invoices = (context.get('active_ids'))
-	# 	_logger.debug(invoices)
-	# 	for record in invoices:
-	# 		# _logger.debug(record)
-	# 		fee_log = self.browse(record)
-	# 		fee_log.write({'state' : 'approved'})
-
-	# 	test2 = self.env['courier.fee.log'].search([])
-	# 	_logger.debug(len(test2))
-		
+		})		
 
 	@api.one
 	def action_paid(self):
@@ -99,10 +84,13 @@ class courier_fee_log(models.Model):
 			'state': 'rejected',
 		})
 
-		
-
 	def calculate_fee(self, trip):
-		fee_total = 0
+		obj_chjs = self.env['courier.fee.setting']
+		curr_date =  datetime.today().strftime(DEFAULT_SERVER_DATE_FORMAT)
+		get_setting = obj_chjs.get_current(curr_date,domain=[('fee_type','=',trip.courier_id.fee_setting_id.fee_type)])
+		fee_total = 0	
+		if get_setting != trip.courier_id.fee_setting_id:
+			raise ValidationError('This is not latest setting')
 		if(trip.courier_id.fee_setting_id):
 			if(trip.courier_id.fee_setting_id.trip_fee==0):
 				fee_total = trip.courier_id.fee_setting_id.address_fee
@@ -111,7 +99,8 @@ class courier_fee_log(models.Model):
 			_logger.debug(fee_total)
 			executed_counter = 0
 			for record in trip.trip_line_ids:
-				if(record.execute_status == 'executed'):
+				print (record.execute_status)
+				if(record.execute_status == 'execute'):
 					executed_counter = executed_counter + 1
 			fee_total = fee_total + (executed_counter * trip.courier_id.fee_setting_id.delivered_bonus)
 			self.write({
